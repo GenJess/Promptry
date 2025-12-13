@@ -3,11 +3,12 @@ import React, { useEffect, useRef, ReactNode } from 'react';
 interface GlowCardProps {
   children: ReactNode;
   className?: string;
-  glowColor?: 'blue' | 'purple' | 'green' | 'red' | 'orange' | 'yellow';
+  glowColor?: 'blue' | 'purple' | 'green' | 'red' | 'orange' | 'yellow' | 'cyan' | 'pink';
   size?: 'sm' | 'md' | 'lg';
   width?: string | number;
   height?: string | number;
   customSize?: boolean; // When true, ignores size prop and uses width/height or className
+  noBorder?: boolean; // Option to remove internal border logic if desired
 }
 
 const glowColorMap = {
@@ -16,7 +17,9 @@ const glowColorMap = {
   green: { base: 120, spread: 200 },
   red: { base: 0, spread: 200 },
   orange: { base: 30, spread: 200 },
-  yellow: { base: 50, spread: 250 }
+  yellow: { base: 50, spread: 250 },
+  cyan: { base: 180, spread: 220 },
+  pink: { base: 320, spread: 200 }
 };
 
 const sizeMap = {
@@ -32,7 +35,8 @@ export const GlowCard: React.FC<GlowCardProps> = ({
   size = 'md',
   width,
   height,
-  customSize = false
+  customSize = false,
+  noBorder = false
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -53,7 +57,7 @@ export const GlowCard: React.FC<GlowCardProps> = ({
     return () => document.removeEventListener('pointermove', syncPointer);
   }, []);
 
-  const { base, spread } = glowColorMap[glowColor];
+  const { base, spread } = glowColorMap[glowColor] || glowColorMap.blue;
 
   // Determine sizing
   const getSizeClasses = () => {
@@ -68,12 +72,12 @@ export const GlowCard: React.FC<GlowCardProps> = ({
       '--base': base,
       '--spread': spread,
       '--radius': '16', // rounded-2xl
-      '--border': '1',
+      '--border': noBorder ? '0' : '1',
       '--backdrop': 'hsl(224 71% 4% / 0.2)', // bg-gray-950 with some transparency
       '--backup-border': 'hsl(240 5% 34% / 0.2)', // gray-700
       '--size': '400',
       '--outer': '1',
-      '--border-size': 'calc(var(--border, 2) * 1px)',
+      '--border-size': 'calc(var(--border, 1) * 1px)',
       '--spotlight-size': 'calc(var(--size, 150) * 1px)',
       '--hue': 'calc(var(--base) + (var(--xp, 0) * var(--spread, 0)))',
       backgroundImage: `radial-gradient(
@@ -86,7 +90,9 @@ export const GlowCard: React.FC<GlowCardProps> = ({
       backgroundSize: 'calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)))',
       backgroundPosition: '50% 50%',
       backgroundAttachment: 'fixed',
-      border: 'var(--border-size) solid var(--backup-border)',
+      // We handle border via the ::before pseudo element or custom CSS in parent, 
+      // but here is a fallback if needed.
+      border: noBorder ? 'none' : 'var(--border-size) solid var(--backup-border)',
       position: 'relative',
       touchAction: 'none',
     };

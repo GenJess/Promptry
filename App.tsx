@@ -1,10 +1,14 @@
+
 import React, { useState } from 'react';
 import HomePage from './pages/HomePage';
 import MirrorPage from './pages/MirrorPage';
 import GymPage from './pages/GymPage';
+import { CoursePage } from './pages/CoursePage';
+import { HistoryPage } from './pages/HistoryPage';
+import { SettingsPage } from './pages/SettingsPage';
 import { Layout } from './components/Layout';
 
-export type Page = 'home' | 'mirror' | 'gym';
+export type Page = 'home' | 'mirror' | 'gym' | 'course' | 'history' | 'settings';
 
 const App: React.FC = () => {
   const [page, setPage] = useState<Page>('home');
@@ -20,6 +24,12 @@ const App: React.FC = () => {
         return <MirrorPage />;
       case 'gym':
         return <GymPage />;
+      case 'course':
+        return <CoursePage />;
+      case 'history':
+        return <HistoryPage />;
+      case 'settings':
+        return <SettingsPage />;
       case 'home':
       default:
         return <HomePage onNavigate={navigate} />;
