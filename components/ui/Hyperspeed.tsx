@@ -18,9 +18,9 @@ interface Colors {
   background: number;
   shoulderLines: number;
   brokenLines: number;
-  leftCars: number[];
-  rightCars: number[];
-  sticks: number;
+  leftCars: readonly number[];
+  rightCars: readonly number[];
+  sticks: number | readonly number[];
 }
 
 interface HyperspeedOptions {
@@ -418,11 +418,11 @@ function random(base: number | readonly [number, number]): number {
   return Math.random() * (base as number);
 }
 
-function pickRandom<T>(arr: T | T[]): T {
+function pickRandom<T>(arr: T | readonly T[]): T {
   if (Array.isArray(arr)) {
     return arr[Math.floor(Math.random() * arr.length)];
   }
-  return arr;
+  return arr as T;
 }
 
 function lerp(current: number, target: number, speed = 0.1, limit = 0.001): number {
@@ -436,7 +436,7 @@ function lerp(current: number, target: number, speed = 0.1, limit = 0.001): numb
 class CarLights {
   webgl: App;
   options: HyperspeedOptions;
-  colors: number[] | THREE.Color;
+  colors: readonly number[] | THREE.Color;
   // FIX: Update property and constructor parameter types to readonly tuples.
   speed: readonly [number, number];
   fade: THREE.Vector2;
@@ -445,7 +445,7 @@ class CarLights {
   constructor(
     webgl: App,
     options: HyperspeedOptions,
-    colors: number[] | THREE.Color,
+    colors: readonly number[] | THREE.Color,
     speed: readonly [number, number],
     fade: THREE.Vector2
   ) {

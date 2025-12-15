@@ -1,14 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { ScoreAndFeedbackResponse } from '../types';
 
-const API_KEY = process.env.API_KEY;
-
-if (!API_KEY) {
-  throw new Error("API_KEY environment variable not set.");
-}
-
-const ai = new GoogleGenAI({ apiKey: API_KEY });
-
 const promptSchema = {
   type: Type.OBJECT,
   properties: {
@@ -79,6 +71,7 @@ const promptSchema = {
 };
 
 export const generatePromptFromImage = async (base64ImageData: string, mimeType: string, width: number, height: number): Promise<string> => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const imagePart = {
     inlineData: {
       data: base64ImageData,
@@ -150,6 +143,7 @@ const scoreAndFeedbackSchemaV2 = {
 
 
 export const generateChallenge = async (difficulty: string): Promise<{ prompt: string; base64: string; mimeType: string }> => {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     // 1. Generate a prompt based on difficulty
     const promptGenerationResponse = await ai.models.generateContent({
         model: "gemini-2.5-flash",
@@ -182,6 +176,7 @@ export const generateChallenge = async (difficulty: string): Promise<{ prompt: s
 };
 
 export const generateImageFromUserPrompt = async (prompt: string): Promise<{ base64: string; mimeType: string }> => {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateImages({
         model: 'imagen-4.0-generate-001',
         prompt: prompt,
@@ -209,6 +204,7 @@ export const getScoreAndFeedback = async (
     targetPrompt: string,
     userPrompt: string
 ): Promise<ScoreAndFeedbackResponse> => {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const refImagePart = { inlineData: { data: refImage.base64, mimeType: refImage.mimeType } };
     const userImagePart = { inlineData: { data: userImage.base64, mimeType: userImage.mimeType } };
     
